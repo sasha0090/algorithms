@@ -25,27 +25,37 @@ def read_input() -> Tuple[int, List[int]]:
 
 def get_distance(street_len: int, empty_positions: List[int]) -> List[int]:
     result = []
-    for count, empty_position in enumerate(empty_positions, start=1):
-        if count == 1 and empty_position > 0:
-            result.extend(range(empty_position+1)[:-0:-1])
-        if count == len(empty_positions):
-            result.extend(range(street_len-empty_position))
-            break
+    RANGE_ENDFIX = 1
+    if empty_positions[0] > 0:
+        # Прописываем дальность, если 0 не вначале
+        result.extend(range(empty_positions[0] + RANGE_ENDFIX)[:0:-1])
 
-        distance_between_empty = abs(empty_position - empty_positions[count])
-        range_endfix = 1
-        distance_range = range(int(distance_between_empty/2) + range_endfix)
+    for count, empty_position in enumerate(empty_positions[:-1], start=1):
+        # Находим длину до след точки
+        # (включительно, чтобы не нагромождать дальше конструкциями)
+        distance_between_empty = empty_positions[count] - empty_position
+        # Ищем значение середины, т.к. пик дальности
+        distance_range = range(int(distance_between_empty / 2) + RANGE_ENDFIX)
+        # Прописываем значения до пика
         result.extend(distance_range[:])
-        if distance_between_empty > 1 + range_endfix:
-            if distance_between_empty % 2 == 0:
-                result.extend(distance_range[-2:0:-1])
-            else:
-                result.extend(distance_range[:-0:-1])
+
+        # Делаем реверс
+        if distance_between_empty % 2 == 0:
+            # не включая сам пик, т.к. между точками количество не четное
+            result.extend(distance_range[-2:0:-1])
+        else:
+            # и на оборот
+            result.extend(distance_range[:0:-1])
+
+    # В самом конце добавляем окончание
+    result.extend(range(street_len - empty_positions[-1]))
+
     return result
 
 
 if __name__ == '__main__':
     street_len, build_numbers = read_input()
+    # Создаем список с местами пустых значений
     empty_positions = [
         count for count, val in enumerate(build_numbers) if val == 0
     ]
