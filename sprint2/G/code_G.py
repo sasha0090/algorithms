@@ -8,7 +8,7 @@
 import sys
 
 
-class StackMax:
+class StackMaxEffective:
     def __init__(self):
         self.items = []
 
@@ -36,7 +36,7 @@ def read_input():
 
 def solution(commands):
     result = []
-    stack = StackMax()
+    stack = StackMaxEffective()
     for command in commands:
         if command[0] == 'get_max':
             if stack:
